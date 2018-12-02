@@ -16,9 +16,10 @@ import java.util.stream.Collectors;
 
 
 public class JsonService {
-    private static final int MODEL_POSITION_ID = 8;
-    private static final int FROM_POSITION_ID = 11;
-    private static final int TO_POSITION_ID = 12;
+    private static final int FLIGHT_CODE = 13;
+    private static final int PLANE_TYPE = 8;
+    private static final int FROM = 11;
+    private static final int TO = 12;
     private static JsonService jsonService;
 
     public static JsonService getInstance(){
@@ -71,19 +72,14 @@ public class JsonService {
             throw new RuntimeException("Nie udalo sie rozparsowac JSONa", e);
         }
 
-        return refinePlanes(planes);
+        return planes;
     }
 
-    private Set<Plane> refinePlanes(Set<Plane> planes) {
-        return planes.stream()
-                .filter(this::isPlaneValed)
-                .collect(Collectors.toSet());
-    }
-
-    private boolean isPlaneValed(Plane plane){
-        return StringUtils.isNotBlank(plane.getFrom())
+    private boolean isPlaneValid(Plane plane){
+        return StringUtils.isNotBlank(plane.getFlightCode())
+                && StringUtils.isNotBlank(plane.getFrom())
                 && StringUtils.isNotBlank(plane.getTo())
-                && StringUtils.isNotBlank(plane.getModel());
+                && StringUtils.isNotBlank(plane.getPlaneType());
     }
 
     private Set<Plane> parseJsonToPlanes(String responseBody) {
@@ -100,12 +96,16 @@ public class JsonService {
         values = json.toJSONArray(names);
 
         for (int i = 0; i < names.length(); i++) {
-            String model = values.getJSONArray(i).getString(MODEL_POSITION_ID);
-            String from = values.getJSONArray(i).getString(FROM_POSITION_ID);
-            String to = values.getJSONArray(i).getString(TO_POSITION_ID);
+            String flightCode = values.getJSONArray(i).getString(FLIGHT_CODE);
+            String planeType = values.getJSONArray(i).getString(PLANE_TYPE);
+            String from = values.getJSONArray(i).getString(FROM);
+            String to = values.getJSONArray(i).getString(TO);
 
-            Plane plane = new Plane(model, from, to);
-            setOfPlanes.add(plane);
+            Plane plane = new Plane(flightCode, planeType, from, to);
+
+            if( isPlaneValid(plane) ){
+                setOfPlanes.add(plane);
+            }
         }
 
         return setOfPlanes;
