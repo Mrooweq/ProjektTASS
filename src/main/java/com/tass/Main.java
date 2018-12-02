@@ -10,6 +10,6 @@ public class Main {
 
     public static void main(String[] args) {
         JsonService jsonService = JsonService.getInstance();
-        Set<Plane> planes = jsonService.getPlanesFromFile("files/json.txt");
+        Set<Plane> planes = jsonService.getPlanesFromFiles();
     }
 }

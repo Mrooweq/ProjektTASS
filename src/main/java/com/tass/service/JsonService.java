@@ -8,6 +8,7 @@ import org.json.JSONObject;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Set;
@@ -15,9 +16,9 @@ import java.util.stream.Collectors;
 
 
 public class JsonService {
-    private final int MODEL_POSITION_ID = 8;
-    private final int FROM_POSITION_ID = 11;
-    private final int TO_POSITION_ID = 12;
+    private static final int MODEL_POSITION_ID = 8;
+    private static final int FROM_POSITION_ID = 11;
+    private static final int TO_POSITION_ID = 12;
     private static JsonService jsonService;
 
     public static JsonService getInstance(){
@@ -27,16 +28,34 @@ public class JsonService {
         return jsonService;
     }
 
-    public Set<Plane> getPlanesFromFile(String fileName){
-        String str = readFromFile(fileName);
-        return getPlanes(str);
+    public Set<Plane> getPlanesFromFiles(){
+        Set<Plane> planes = new HashSet<>();
+        Set<String> filePathSet;
+
+        try {
+            filePathSet = Files.walk(Paths.get("files/"))
+                    .filter(Files::isRegularFile)
+                    .map(Path::toString)
+                    .collect(Collectors.toSet());
+        }catch (Exception e) {
+            throw new RuntimeException("Nie udalo sie odczytac sciezek do plikow", e);
+        }
+
+        for (String filePath : filePathSet) {
+            String contentOfFile = readFromFile(filePath);
+            Set<Plane> setOfPlanes = getPlanes(contentOfFile);
+            planes.addAll(setOfPlanes);
+        }
+
+        return planes;
     }
 
     private String readFromFile(String fileName) {
         StringBuilder contentBuilder = new StringBuilder();
 
         try {
-            Files.lines(Paths.get(fileName), StandardCharsets.UTF_8)
+            Files
+                    .lines(Paths.get(fileName), StandardCharsets.UTF_8)
                     .forEach(s -> contentBuilder.append(s).append("\n"));
         } catch (Exception e){
             throw new RuntimeException("Nie udalo sie odczytac JSONa", e);
