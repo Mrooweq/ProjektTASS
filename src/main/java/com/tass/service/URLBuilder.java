@@ -9,7 +9,7 @@ public class URLBuilder {
     private static URLBuilder urlBuilder;
 
     private static final String URL_TO_SEARCH_IN_GOOGLE = "https://www.google.com/search?q={airport_code}+airport";
-    private static final String URL_TO_WIKIMEDIA = "https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/{host}/all-access/user/{airport_name}/monthly/20181001/20181101";
+    private static final String URL_TO_WIKIMEDIA = "https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/{host}/all-access/user/{airport_name}/monthly/{timestamp_from}/{timestamp_to}";
 
     public static URLBuilder getInstance(){
         if(urlBuilder == null){
@@ -29,9 +29,13 @@ public class URLBuilder {
         }
     }
 
-    public URL buildWikimedia(URL wikipediaUrl) {
+    public URL buildWikimedia(URL wikipediaUrl, String from, String to) {
         List<String> params = Arrays.asList(wikipediaUrl.getPath().split("/"));
-        String urlString = URL_TO_WIKIMEDIA.replace("{host}", wikipediaUrl.getHost()).replace("{airport_name}", params.get(2));
+        String urlString = URL_TO_WIKIMEDIA.
+                replace("{host}", wikipediaUrl.getHost()).
+                replace("{airport_name}", params.get(2)).
+                replace("{timestamp_from}", from).
+                replace("{timestamp_to}", to);
 
         try {
             return new URL(urlString);

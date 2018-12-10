@@ -11,17 +11,18 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.net.MalformedURLException;
 import java.net.URL;
+import java.sql.Timestamp;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 public class WikiService {
     private static WikiService wikiService;
 
-
+    private static final String POL_WIKIPEDIA_HOSTNAME = "pl.wikipedia.org";
     private static final String ENG_WIKIPEDIA_HOSTNAME = "en.wikipedia.org";
-    private static final String WIKIPEDIA = ".*https://.*[^en]\\.wikipedia\\.org.*";
+    private static final String WIKIPEDIA = ".*https://(?!he)(?!en).{2,3}\\.wikipedia\\.org.*";
 
     public static WikiService getInstance(){
         if(wikiService == null){
@@ -45,9 +46,9 @@ public class WikiService {
         String polishAirportName = "";
         Long views = 0L;
         for (URL countryUrl : allAvailableCountriesWikiAirportURLs) {
-            if (countryUrl.getHost().equals("pl.wikipedia.org"))
+            if (countryUrl.getHost().equals(POL_WIKIPEDIA_HOSTNAME))
                 polishAirportName = getNameFromURL(countryUrl);
-            URL wikimediaUrl = urlBuilder.buildWikimedia(countryUrl);
+            URL wikimediaUrl = urlBuilder.buildWikimedia(countryUrl, from, to);
             String jsonResponse = doRequest(wikimediaUrl);
             views += getViewsFromJson(jsonResponse);
         }
