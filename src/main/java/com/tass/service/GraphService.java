@@ -1,7 +1,7 @@
 package com.tass.service;
 
 import com.tass.api.Plane;
-import com.tass.api.Value;
+import com.tass.api.graph.Value;
 import com.tass.utils.PlaneTypeEnum;
 import edu.uci.ics.jung.graph.DirectedGraph;
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
