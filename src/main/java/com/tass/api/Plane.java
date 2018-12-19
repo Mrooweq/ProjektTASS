@@ -3,6 +3,8 @@ package com.tass.api;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.util.Arrays;
+
 @AllArgsConstructor
 @Getter
 public class Plane {
@@ -18,6 +20,13 @@ public class Plane {
         }
 
         Plane plane = (Plane) o;
-        return this.flightCode.equals(plane.getFlightCode());
+        return this.flightCode.equals(plane.getFlightCode())
+                && this.from.equals(plane.getFrom())
+                && this.to.equals(plane.getTo());
+    }
+
+    @Override
+    public int hashCode(){
+        return Arrays.asList(flightCode, from, to).hashCode();
     }
 }
