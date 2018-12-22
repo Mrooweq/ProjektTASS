@@ -1,13 +1,11 @@
 package com.tass.service;
 
 
-import com.tass.api.Airport;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.CookieSpecs;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.client.HttpClients;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -34,8 +32,8 @@ public class WikiService {
     }
 
     public Long getAirportViews (String airportCode, String from, String to) {
-        URLBuilder urlBuilder = URLBuilder.getInstance();
-        URL googleURL = urlBuilder.buildGoogleSearching(airportCode);
+        URLService urlService = URLService.getInstance();
+        URL googleURL = urlService.buildGoogleSearching(airportCode);
         String googleResponse = doRequest(googleURL);
 
         HtmlService htmlService = HtmlService.getInstance();
@@ -46,13 +44,18 @@ public class WikiService {
         allAvailableCountriesWikiAirportURLs.add(engWikiAirportURL);
 
         Long views = 0L;
+
+        if (allAvailableCountriesWikiAirportURLs == null)
+            return views;
+
         for (URL countryUrl : allAvailableCountriesWikiAirportURLs) {
-            URL wikimediaUrl = urlBuilder.buildWikimedia(countryUrl, from, to);
+            URL wikimediaUrl = urlService.buildWikimedia(countryUrl, from, to);
             String jsonResponse = doRequest(wikimediaUrl);
             try {
                 views += getViewsFromJson(jsonResponse);
             } catch (JSONException e){
                 System.out.println("Problem with url : " + countryUrl);
+                //System.out.println(jsonResponse);
             }
         }
 
