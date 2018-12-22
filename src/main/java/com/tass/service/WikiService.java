@@ -33,7 +33,7 @@ public class WikiService {
         return wikiService;
     }
 
-    public Airport getAirportViews (String airportCode, String from, String to) {
+    public Long getAirportViews (String airportCode, String from, String to) {
         URLBuilder urlBuilder = URLBuilder.getInstance();
         URL googleURL = urlBuilder.buildGoogleSearching(airportCode);
         String googleResponse = doRequest(googleURL);
@@ -45,11 +45,8 @@ public class WikiService {
         List<URL> allAvailableCountriesWikiAirportURLs = htmlService.findURLs(wikiResponse, WIKIPEDIA);
         allAvailableCountriesWikiAirportURLs.add(engWikiAirportURL);
 
-        String polishAirportName = "";
         Long views = 0L;
         for (URL countryUrl : allAvailableCountriesWikiAirportURLs) {
-            if (countryUrl.getHost().equals(POL_WIKIPEDIA_HOSTNAME))
-                polishAirportName = getNameFromURL(countryUrl);
             URL wikimediaUrl = urlBuilder.buildWikimedia(countryUrl, from, to);
             String jsonResponse = doRequest(wikimediaUrl);
             try {
@@ -59,7 +56,7 @@ public class WikiService {
             }
         }
 
-        return new Airport(polishAirportName,airportCode, views);
+        return views;
     }
 
     private String doRequest(URL url) {
