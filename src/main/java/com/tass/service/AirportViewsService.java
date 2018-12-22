@@ -26,7 +26,7 @@ public class AirportViewsService {
         return airportViewsService;
     }
 
-    public Map<String, Long> getAirportViews (DirectedGraph directedGraph, String from, String to) {
+    public Map<String, Long> getAirportViews (String from, String to) {
         Map<String, Long> airportViews = new HashMap<>();
         DirectedGraph<String, Value> graph = graphService.generateGraph(GENERATE_FROM_SCRATCH);
         Collection<String> airports = graph.getVertices();
@@ -37,5 +37,11 @@ public class AirportViewsService {
         }
 
         return airportViews;
+    }
+
+    public void print (Map<String, Long> airportViews) {
+        for (Map.Entry entry : airportViews.entrySet()) {
+            System.out.println(entry.getKey() + ": " + entry.getValue());
+        }
     }
  }
