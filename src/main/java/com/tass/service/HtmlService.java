@@ -49,24 +49,22 @@ public class HtmlService {
             }
         }
 
-        if (URLs.isEmpty())
-            throw new RuntimeException("Nie znaleziono zadnego linka z podana zawartoscia: " + urlRegex);
+        //if (URLs.isEmpty())
+            //throw new RuntimeException("Nie znaleziono zadnego linka z podana zawartoscia: " + urlRegex);
 
         return URLs;
     }
 
     private URL getUrlFromHref(String href) {
+        URLService urlService = URLService.getInstance();
         String urlString = href.substring(href.indexOf("https"));
 
         if (urlString.contains("&")) {
             urlString = urlString.substring(0, urlString.indexOf("&"));
         }
 
-        try {
-            return new URL (urlString);
-        } catch (MalformedURLException e) {
-            e.getStackTrace();
-            throw new RuntimeException("");
-        }
+        urlString = urlService.correct(urlString);
+
+        return urlService.create(urlString);
     }
 }

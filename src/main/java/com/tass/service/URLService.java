@@ -5,17 +5,17 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 
-public class URLBuilder {
-    private static URLBuilder urlBuilder;
+public class URLService {
+    private static URLService urlService;
 
     private static final String URL_TO_SEARCH_IN_GOOGLE = "https://www.google.com/search?q={airport_code}+airport";
     private static final String URL_TO_WIKIMEDIA = "https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/{host}/all-access/user/{airport_name}/monthly/{timestamp_from}/{timestamp_to}";
 
-    public static URLBuilder getInstance(){
-        if(urlBuilder == null){
-            urlBuilder = new URLBuilder();
+    public static URLService getInstance(){
+        if(urlService == null){
+            urlService = new URLService();
         }
-        return urlBuilder;
+        return urlService;
     }
 
     public URL buildGoogleSearching(String airportCode) {
@@ -44,4 +44,22 @@ public class URLBuilder {
             throw new RuntimeException();
         }
     }
+
+    public URL create (String urlString) {
+        try {
+            return new URL(urlString);
+        } catch (MalformedURLException e) {
+            e.getStackTrace();
+            throw new RuntimeException("");
+        }
+    }
+
+    public String correct(String urlString) {
+        if (urlString.contains("%25E2%2580%2593")) {
+            urlString = urlString.replace("%25E2%2580%2593", "-");
+        }
+        return urlString;
+    }
+
+
 }
