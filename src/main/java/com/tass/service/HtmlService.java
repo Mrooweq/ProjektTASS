@@ -1,6 +1,7 @@
 package com.tass.service;
 
 import com.tass.exceptions.EngWikiURLNotFoundException;
+import com.tass.exceptions.WikiURLsNotFoundException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -35,7 +36,7 @@ public class HtmlService {
         throw new EngWikiURLNotFoundException("Nie znaleziono zadnego linka z podana zawartoscia: " + hostname);
     }
 
-    public List<URL> findURLs (String htmlText, String urlRegex) {
+    public List<URL> findURLs (String htmlText, String urlRegex) throws WikiURLsNotFoundException {
         List<URL> URLs = new ArrayList<>();
         Document document = Jsoup.parse(htmlText);
         Elements elements = document.select("a");
@@ -49,8 +50,8 @@ public class HtmlService {
             }
         }
 
-        //if (URLs.isEmpty())
-            //throw new RuntimeException("Nie znaleziono zadnego linka z podana zawartoscia: " + urlRegex);
+        if (URLs.isEmpty())
+            throw new WikiURLsNotFoundException("Nie znaleziono zadnego linka z podana zawartoscia: " + urlRegex);
 
         return URLs;
     }
