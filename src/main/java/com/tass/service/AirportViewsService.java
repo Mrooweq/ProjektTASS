@@ -1,10 +1,8 @@
 package com.tass.service;
 
-import com.tass.api.graph.Value;
 import com.tass.exceptions.EngWikiURLNotFoundException;
-import com.tass.exceptions.WikiURLsNotFoundException;
-import edu.uci.ics.jung.graph.DirectedGraph;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.net.URL;
 import java.util.Collection;
@@ -37,7 +35,7 @@ public class AirportViewsService {
         return airportViewsService;
     }
 
-    public Map<String, Long> getAirportViews(Collection<String> airports, String from, String to) {
+    public JSONObject getAirportViews(Collection<String> airports, String from, String to) {
         Map<String, Long> airportViews = new HashMap<>();
         Long views = 0L;
 
@@ -70,19 +68,18 @@ public class AirportViewsService {
                 views = Long.MIN_VALUE;
                 airportViews.put(airport, views);
             }
-            catch (WikiURLsNotFoundException e) {
-                System.out.println("Not found any Wiki for: " + airport);
-                views = 0L;
-                airportViews.put(airport, views);
-            }
         }
 
-        return airportViews;
+        return new JSONObject(airportViews);
     }
 
     public void print (Map<String, Long> airportViews) {
         for (Map.Entry entry : airportViews.entrySet()) {
             System.out.println(entry.getKey() + ": " + entry.getValue());
         }
+    }
+
+    public void print (JSONObject json) {
+        System.out.println(json.toString());
     }
  }

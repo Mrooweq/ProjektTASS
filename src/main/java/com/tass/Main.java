@@ -3,6 +3,7 @@ package com.tass;
 import com.tass.service.AirportViewsService;
 import com.tass.service.GraphService;
 import edu.uci.ics.jung.graph.DirectedGraph;
+import org.json.JSONObject;
 
 import java.util.*;
 
@@ -17,8 +18,8 @@ public class Main {
         String to = "20181101";
         DirectedGraph graph = graphService.generateGraph(GENERATE_FROM_SCRATCH);
         List<String> airports = new ArrayList<>(graph.getVertices());
-        Collection<String> partOfAirports = airports.subList(0,5);
-        Map<String,Long> airportViews = airportViewsService.getAirportViews(partOfAirports, from, to);
-        airportViewsService.print(airportViews);
+        Collection<String> partOfAirports = airports.subList(0,10);
+        JSONObject airportViewsJson = airportViewsService.getAirportViews(partOfAirports, from, to);
+        airportViewsService.print(airportViewsJson);
     }
 }
