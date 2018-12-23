@@ -19,7 +19,6 @@ public class Main {
         DirectedGraph graph = graphService.generateGraph(GENERATE_FROM_SCRATCH);
         List<String> airports = new ArrayList<>(graph.getVertices());
         Collection<String> partOfAirports = airports.subList(0,10);
-        JSONObject airportViewsJson = airportViewsService.getAirportViews(partOfAirports, from, to);
-        airportViewsService.print(airportViewsJson);
+        System.out.println(airportViewsService.getAirportViewsToJson(partOfAirports, from, to));
     }
 }

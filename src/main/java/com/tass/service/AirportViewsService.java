@@ -1,14 +1,16 @@
 package com.tass.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tass.api.AirportViews;
 import com.tass.exceptions.EngWikiURLNotFoundException;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class AirportViewsService {
     private static final String POL_WIKIPEDIA_HOSTNAME = "pl.wikipedia.org";
@@ -21,12 +23,14 @@ public class AirportViewsService {
     private URLService urlService;
     private HTTPRequestService httpRequestService;
     private HtmlService htmlService;
+    private ObjectMapper objectMapper;
 
     public AirportViewsService() {
         wikiService = WikiService.getInstance();
         urlService = URLService.getInstance();
         httpRequestService = HTTPRequestService.getInstance();
         htmlService = HtmlService.getInstance();
+        objectMapper = new ObjectMapper();
     }
 
     public static AirportViewsService getInstance () {
@@ -35,8 +39,18 @@ public class AirportViewsService {
         return airportViewsService;
     }
 
-    public JSONObject getAirportViews(Collection<String> airports, String from, String to) {
-        Map<String, Long> airportViews = new HashMap<>();
+    public void getAirportViewsToJsonFile(Collection<String> airports, String from, String to) {
+        Set<AirportViews> airportViews = getAirportViews(airports, from, to);
+        parseAirportViewsToJsonFile(airportViews);
+    }
+
+    public String getAirportViewsToJson (Collection<String> airports, String from, String to) {
+        Set<AirportViews> airportViews = getAirportViews(airports, from, to);
+        return parseAirportViewToJson(airportViews);
+    }
+
+    private Set<AirportViews> getAirportViews (Collection<String> airports, String from, String to) {
+        Set<AirportViews> airportViews = new HashSet<>();
         Long views = 0L;
 
         for (String airport : airports) {
@@ -55,31 +69,35 @@ public class AirportViewsService {
                     try {
                         String jsonResponse = httpRequestService.doRequest(wikimediaUrl);
                         views += wikiService.getViewsFromJson(jsonResponse);
-                        //System.out.println("Good: " + wikimediaUrl);
                     } catch (JSONException e) {
                         System.out.println("BAD: " + wikimediaUrl);
                     }
 
                 }
 
-                airportViews.put(airport, views);
+                airportViews.add(new AirportViews(airport, views));
             } catch (EngWikiURLNotFoundException e) {
                 System.out.println("Not found eng wikipedia for: " + airports);
                 views = Long.MIN_VALUE;
-                airportViews.put(airport, views);
+                airportViews.add(new AirportViews(airport, views));
             }
         }
-
-        return new JSONObject(airportViews);
+        return airportViews;
     }
 
-    public void print (Map<String, Long> airportViews) {
-        for (Map.Entry entry : airportViews.entrySet()) {
-            System.out.println(entry.getKey() + ": " + entry.getValue());
+    private void parseAirportViewsToJsonFile (Set<AirportViews> airportViews) {
+        try {
+            objectMapper.writeValue(new File("airportViews.json"), airportViews);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
-    public void print (JSONObject json) {
-        System.out.println(json.toString());
+    private String parseAirportViewToJson (Set<AirportViews> airportViews) {
+        try {
+            return objectMapper.writeValueAsString(airportViews);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Parsowanie jsona do Stringa nie wyszlo.");
+        }
     }
  }

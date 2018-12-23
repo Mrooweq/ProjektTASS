@@ -5,8 +5,7 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public class Airport {
-    private String name;
+public class AirportViews {
     private String code;
     private Long views;
 }
