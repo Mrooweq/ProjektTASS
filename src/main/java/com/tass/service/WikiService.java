@@ -1,6 +1,7 @@
 package com.tass.service;
 
 
+import com.tass.exceptions.EngWikiURLNotFoundException;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.CookieSpecs;
@@ -35,34 +36,39 @@ public class WikiService {
         URLService urlService = URLService.getInstance();
         URL googleURL = urlService.buildGoogleSearching(airportCode);
         String googleResponse = doRequest(googleURL);
-
         HtmlService htmlService = HtmlService.getInstance();
-        URL engWikiAirportURL = htmlService.findURL(googleResponse, ENG_WIKIPEDIA_HOSTNAME);
-        String wikiResponse = doRequest(engWikiAirportURL);
-
-        List<URL> allAvailableCountriesWikiAirportURLs = htmlService.findURLs(wikiResponse, WIKIPEDIA);
-        allAvailableCountriesWikiAirportURLs.add(engWikiAirportURL);
-
         Long views = 0L;
 
-        if (allAvailableCountriesWikiAirportURLs == null)
-            return views;
+        try {
+            URL engWikiAirportURL = htmlService.findURL(googleResponse, ENG_WIKIPEDIA_HOSTNAME);
+            String wikiResponse = doRequest(engWikiAirportURL);
 
-        for (URL countryUrl : allAvailableCountriesWikiAirportURLs) {
-            URL wikimediaUrl = urlService.buildWikimedia(countryUrl, from, to);
-            String jsonResponse = doRequest(wikimediaUrl);
-            try {
-                views += getViewsFromJson(jsonResponse);
-            } catch (JSONException e){
-                System.out.println("Problem with url : " + countryUrl);
-                //System.out.println(jsonResponse);
+            List<URL> allAvailableCountriesWikiAirportURLs = htmlService.findURLs(wikiResponse, WIKIPEDIA);
+            allAvailableCountriesWikiAirportURLs.add(engWikiAirportURL);
+
+            if (allAvailableCountriesWikiAirportURLs == null)
+                views = 0L;
+
+            for (URL countryUrl : allAvailableCountriesWikiAirportURLs) {
+                URL wikimediaUrl = urlService.buildWikimedia(countryUrl, from, to);
+                String jsonResponse = doRequest(wikimediaUrl);
+                try {
+                    views += getViewsFromJson(jsonResponse);
+                } catch (JSONException e){
+                    System.out.println("BAD: " + wikimediaUrl);
+                }
+                System.out.println("Good: " + wikimediaUrl);
             }
+
+        } catch (EngWikiURLNotFoundException e) {
+            System.out.println("Not found eng wikipedia for: " + airportCode);
+            views = Long.MIN_VALUE;
         }
 
         return views;
     }
 
-    private String doRequest(URL url) {
+    public String doRequest(URL url) {
         String htmlResponse;
 
         RequestConfig requestConfig = RequestConfig.custom().setCookieSpec(CookieSpecs.STANDARD).build();

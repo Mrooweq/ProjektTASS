@@ -1,7 +1,10 @@
 package com.tass.service;
 
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.List;
 
@@ -30,12 +33,13 @@ public class URLService {
     }
 
     public URL buildWikimedia(URL wikipediaUrl, String from, String to) {
-        List<String> params = Arrays.asList(wikipediaUrl.getPath().split("/"));
+        String article = wikipediaUrl.getPath().replace("/wiki/", "");
         String urlString = URL_TO_WIKIMEDIA.
                 replace("{host}", wikipediaUrl.getHost()).
-                replace("{airport_name}", params.get(2)).
+                replace("{airport_name}", decodeArticle(article)).
                 replace("{timestamp_from}", from).
                 replace("{timestamp_to}", to);
+        //System.out.println(decodeArticle(article));
 
         try {
             return new URL(urlString);
@@ -54,12 +58,13 @@ public class URLService {
         }
     }
 
-    public String correct(String urlString) {
-        if (urlString.contains("%25E2%2580%2593")) {
-            urlString = urlString.replace("%25E2%2580%2593", "-");
+    private String decodeArticle (String article) {
+        try {
+            return URLDecoder.decode(article, "UTF-8").
+                    replace("/", "%2F").
+                    replace("\"","%22");
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException("Decoding problem");
         }
-        return urlString;
     }
-
-
 }

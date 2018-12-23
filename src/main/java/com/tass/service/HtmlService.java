@@ -1,11 +1,11 @@
 package com.tass.service;
 
+import com.tass.exceptions.EngWikiURLNotFoundException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +21,7 @@ public class HtmlService {
         return htmlService;
     }
 
-    public URL findURL (String htmlText, String hostname) {
+    public URL findURL (String htmlText, String hostname) throws EngWikiURLNotFoundException {
         Document document = Jsoup.parse(htmlText);
         Elements elements = document.select("a");
 
@@ -32,7 +32,7 @@ public class HtmlService {
             }
         }
 
-        throw new RuntimeException("Nie znaleziono zadnego linka z podana zawartoscia: " + hostname);
+        throw new EngWikiURLNotFoundException("Nie znaleziono zadnego linka z podana zawartoscia: " + hostname);
     }
 
     public List<URL> findURLs (String htmlText, String urlRegex) {
@@ -63,7 +63,7 @@ public class HtmlService {
             urlString = urlString.substring(0, urlString.indexOf("&"));
         }
 
-        urlString = urlService.correct(urlString);
+        //urlString = urlService.correctForWikimedia(urlString);
 
         return urlService.create(urlString);
     }
