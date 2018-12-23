@@ -52,6 +52,8 @@ public class AirportViewsService {
     private Set<AirportViews> getAirportViews (Collection<String> airports, String from, String to) {
         Set<AirportViews> airportViews = new HashSet<>();
         Long views = 0L;
+        Long badURLs = 0L;
+        Long goodURLs = 0L;
 
         for (String airport : airports) {
             URL googleURL = urlService.buildGoogleSearching(airport);
@@ -71,8 +73,9 @@ public class AirportViewsService {
                         views += wikiService.getViewsFromJson(jsonResponse);
                     } catch (JSONException e) {
                         System.out.println("BAD: " + wikimediaUrl);
+                        badURLs++;
                     }
-
+                    goodURLs++;
                 }
 
                 airportViews.add(new AirportViews(airport, views));
@@ -82,6 +85,8 @@ public class AirportViewsService {
                 airportViews.add(new AirportViews(airport, views));
             }
         }
+        System.out.println("Bad URLs: " + badURLs);
+        System.out.println("Good URLs: " + goodURLs);
         return airportViews;
     }
 
