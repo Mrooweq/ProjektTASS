@@ -15,7 +15,7 @@ import java.util.*;
 public class AirportViewsService {
     private static final String POL_WIKIPEDIA_HOSTNAME = "pl.wikipedia.org";
     private static final String ENG_WIKIPEDIA_HOSTNAME = "en.wikipedia.org";
-    private static final String WIKIPEDIA = ".*https://(?!en).{2,3}\\.wikipedia\\.org.*";
+    private static final String WIKIPEDIA = ".*https://(?!en)(?!fa).{2,3}\\.wikipedia\\.org.*";
 
     private static AirportViewsService airportViewsService;
 
@@ -54,8 +54,10 @@ public class AirportViewsService {
         Long views = 0L;
         Long badURLs = 0L;
         Long goodURLs = 0L;
+        Long airportNumber = 0L;
 
         for (String airport : airports) {
+            views = 0L;
             URL googleURL = urlService.buildGoogleSearching(airport);
             String googleResponse = httpRequestService.doRequest(googleURL);
 
@@ -80,9 +82,11 @@ public class AirportViewsService {
 
                 airportViews.add(new AirportViews(airport, views));
             } catch (EngWikiURLNotFoundException e) {
-                System.out.println("Not found eng wikipedia for: " + airports);
-                views = Long.MIN_VALUE;
-                airportViews.add(new AirportViews(airport, views));
+                System.out.println("Not found eng wikipedia for: " + airport);
+            }
+            finally {
+                airportNumber++;
+                System.out.println(airportNumber);
             }
         }
         System.out.println("Bad URLs: " + badURLs);
