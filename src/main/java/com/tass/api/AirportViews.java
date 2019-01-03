@@ -2,11 +2,12 @@ package com.tass.api;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-@AllArgsConstructor
 @Getter
-public class Airport {
-    private String name;
+@AllArgsConstructor
+@NoArgsConstructor
+public class AirportViews {
     private String code;
     private Long views;
 }

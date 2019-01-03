@@ -1,14 +1,12 @@
 package com.tass.service;
 
 
+import com.tass.api.AirportViews;
 import com.tass.api.graph.Value;
 import edu.uci.ics.jung.graph.UndirectedGraph;
 import edu.uci.ics.jung.graph.util.Pair;
 
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class ResultService {
@@ -23,12 +21,15 @@ public class ResultService {
 
     public static void main(String [] args){
         GraphService graphService = GraphService.getInstance();
-        Map<String, Long> mapOfCentrality = new HashMap<>();
-        Map<String, Long> mockMapOfViews = new HashMap<>();
+        AirportViewsService airportViewsService = AirportViewsService.getInstance();
 
         UndirectedGraph<String, Value> graph = graphService.generateGraph(false);
+        Set<AirportViews> airportViewsFromJson = airportViewsService.getAirportViewsFromJson();
 
-        graph.getVertices().forEach(x -> mockMapOfViews.put(x, 100L)); //TODO
+        Map<String, Long> mapOfCentrality = new HashMap<>();
+        Map<String, Long> mapOfViews = new HashMap<>();
+
+        airportViewsFromJson.forEach(x -> mapOfViews.put(x.getCode(), x.getViews()));
         graph.getVertices().forEach(x -> mapOfCentrality.put(x, 0L));
 
         for (Value value : graph.getEdges()) {
@@ -45,7 +46,7 @@ public class ResultService {
 
         for (Map.Entry<String, Long> entry : collect) {
             String code = entry.getKey();
-            System.out.println(code + ";" + entry.getValue() + ";" + mockMapOfViews.get(code));
+            System.out.println(code + ";" + entry.getValue() + ";" + mapOfViews.get(code));
         }
     }
 }
