@@ -24,6 +24,7 @@ public class ResultService {
         AirportViewsService airportViewsService = AirportViewsService.getInstance();
 
         UndirectedGraph<String, Value> graph = graphService.generateGraph(false);
+
         Set<AirportViews> airportViewsFromJson = airportViewsService.getAirportViewsFromJson();
 
         Map<String, Long> mapOfCentrality = new HashMap<>();

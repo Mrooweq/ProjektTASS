@@ -65,7 +65,7 @@ public class AirportViewsService {
         return airportViews;
     }
 
-    private Set<AirportViews> getAirportViews (Collection<String> airports, String from, String to) {
+    public Set<AirportViews> getAirportViews (Collection<String> airports, String from, String to) {
         Set<AirportViews> airportViews = new HashSet<>();
         Long views = 0L;
         Long badURLs = 0L;
@@ -102,7 +102,7 @@ public class AirportViewsService {
             }
             finally {
                 airportNumber++;
-                System.out.println(airportNumber);
+                System.out.println(airport + ": " + views);
             }
         }
         System.out.println("Bad URLs: " + badURLs);

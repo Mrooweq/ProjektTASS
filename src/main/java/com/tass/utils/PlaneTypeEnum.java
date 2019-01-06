@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum PlaneTypeEnum { //TODO
+public enum PlaneTypeEnum {
     A124(6),
     A20N(195),
     A21N(240),

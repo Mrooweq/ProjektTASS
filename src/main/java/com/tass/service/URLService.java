@@ -11,7 +11,7 @@ import java.util.List;
 public class URLService {
     private static URLService urlService;
 
-    private static final String URL_TO_SEARCH_IN_GOOGLE = "https://www.google.com/search?q={airport_code}+airport";
+    private static final String URL_TO_SEARCH_IN_GOOGLE = "https://www.google.com/search?q={airport_code}+airport+iata";
     private static final String URL_TO_WIKIMEDIA = "https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/{host}/all-access/user/{airport_name}/monthly/{timestamp_from}/{timestamp_to}";
 
     public static URLService getInstance(){
