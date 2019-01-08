@@ -2,3 +2,6 @@ target/
 .idea
 target
 *.iml
+
+flightradarbot/app/build
+flightradarbot/.gradle
